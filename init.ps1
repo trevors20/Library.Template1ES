@@ -58,6 +58,10 @@ Param (
 $EnvVars = @{}
 $PrependPath = @()
 
+# Disable dotnet pack and publish defaulting to Release configuration (https://github.com/dotnet/sdk/pull/29155).
+# Local commands tend to want Debug, and we control official builds in the cloud with explicit arguments.
+$EnvVars['DOTNET_CLI_DISABLE_PUBLISH_AND_PACK_RELEASE'] = '1'
+
 if (!$NoPrerequisites) {
     if (!$NoNuGetCredProvider) {
         & "$PSScriptRoot\tools\Install-NuGetCredProvider.ps1" -AccessToken $AccessToken -Force:$UpgradePrerequisites
