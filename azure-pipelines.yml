@@ -29,8 +29,20 @@ variables:
   ci_feed: https://pkgs.dev.azure.com/andrewarnott/_packaging/CI/nuget/v3/index.json # Azure Artifacts feed URL
   NUGET_PACKAGES: $(Agent.TempDirectory)/.nuget/packages/
 
-jobs:
-- template: azure-pipelines/build.yml
+resources:
+  repositories:
+  - repository: 1esPipelines
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1esPipelines
   parameters:
-    includeMacOS: ${{ parameters.includeMacOS }}
-    RunTests: ${{ parameters.RunTests }}
+    stages:
+    - stage: stage
+      jobs:
+      - template: /azure-pipelines/build.yml@self
+        parameters:
+          includeMacOS: ${{ parameters.includeMacOS }}
+          RunTests: ${{ parameters.RunTests }}
